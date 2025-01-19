@@ -1,4 +1,9 @@
 <?php include "template/header.php" ?>
+
+<?php
+
+
+?>
 <div class="text-center mt-3">
     <h2>kriteria</h2>
 

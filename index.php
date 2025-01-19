@@ -1,4 +1,14 @@
-<?php include "template/header.php" ?>
+<?php include "template/header.php";
+
+if (isset($_POST['submit'])) {
+    $hitung = hitung($_POST);
+    var_dump($hitung);
+}
+
+// die;
+
+
+?>
 <?php
 $allKriteria = tampil("SELECT * FROM kriteria");
 $allAlternatif = tampil("SELECT * FROM alternatif");
@@ -9,18 +19,6 @@ $allAlternatif = tampil("SELECT * FROM alternatif");
     <h2>hitung sesuatu yang terbaik</h2>
     <div class="container">
         <form action="" method="post">
-            <div class="mb-3 row">
-                <label for="kriteria" class="col-sm-2 col-form-label">Kriteria</label>
-                <div class="col-sm-10">
-
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                </div>
-            </div>
 
 
             <div class="card-body">
@@ -45,7 +43,7 @@ $allAlternatif = tampil("SELECT * FROM alternatif");
                             <tr>
                                 <td><?= $alternatif['nama_alternatif']; ?></td>
                                 <?php foreach ($allKriteria as $kriteria): ?>
-                                    <td> <input class="form-control" type="number" placeholder="<?= $kriteria['nama_kriteria']; ?>" aria-label="default input example" id="kriteria" name="kriteria[]" aria-describedby="basic-addon2">
+                                    <td> <input class="form-control" type="number" placeholder="<?= $kriteria['nama_kriteria']; ?>" aria-label="default input example" id="kriteria" name="kriteria[<?= $alternatif['id']; ?>][<?= $kriteria['id_kriteria']; ?>]" aria-describedby="basic-addon2">
                                     </td>
                                 <?php endforeach ?>
 
@@ -53,7 +51,7 @@ $allAlternatif = tampil("SELECT * FROM alternatif");
                         <?php endforeach ?>
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-primary">Primary</button>
+                <button type="submit" name="submit" class="btn btn-primary">Tentukan</button>
             </div>
         </form>
     </div>

@@ -7,10 +7,110 @@ function query($query)
     global $conn;
     return mysqli_query($conn, $query);
 }
-function hitung()
+function hitung($data)
 {
-    $kriteria = $_post['kriteria'];
-    $alternatif = $_POST['alternatif'];
+    $kriteriaInput = $data['kriteria'];
+    $kriteriaDB = tampil("SELECT * FROM kriteria");
+    $alternatif = tampil("SELECT * FROM alternatif");
+
+    $jumlahBanyakKriteriaInput = count($kriteriaInput);
+    foreach ($kriteriaDB as $kriteria) {
+
+        $idK = $kriteria['id_kriteria'];
+
+        foreach ($alternatif as $alt) {
+            $idA = $alt['id'];
+            $x = $kriteriaInput[$idA][$idK];
+
+
+
+            if ($kriteria['jenis_kriteria'] == 'benefit') {
+                // -------------benefit---------------
+                $nilaiMax = 0;
+                for ($i = 0; $i < $jumlahBanyakKriteriaInput; $i++) {
+                    if ($nilaiMax < $kriteriaInput[$idA]) {
+                        $nilaiMax = $kriteriaInput[$idA][$idK];
+                    }
+                }
+            } else {
+                //---------------cost--------------------
+                $nilaiMin = 0;
+                for ($i = 0; $i < $jumlahBanyakKriteriaInput; $i++) {
+                    if ($nilaiMin < $kriteriaInput[$idA]) {
+                        $nilaiMin = $kriteriaInput[$idA][$idK];
+                    }
+                }
+            }
+        }
+    }
+    // var_dump($nilaiMax);
+    // die;
+
+    foreach ($alternatif as $alt) {
+        $idA = $alt['id'];
+
+        foreach ($kriteriaDB as $kriteria) {
+            $idK = $kriteria['id_kriteria'];
+
+            if ($kriteria['jenis_kriteria'] == 'benefit') {
+                // -------------benefit---------------
+
+                // for ($i = 0; $i < count($kriteria); $i++) {
+                $kriteriaSudahHitung[$idA][$idK] = $kriteriaInput[$idA][$idK] / $nilaiMax;
+                // echo $kriteriaSudahHitung[$idA][$idK];
+                // }
+            } else {
+                //---------------cost--------------------
+                // for ($i = 0; $i < count($kriteria); $i++) {
+                $kriteriaSudahHitung[$idA][$idK] = $nilaiMin / $kriteriaInput[$idA][$idK];
+                // echo $kriteriaSudahHitung[$idA][$idK];
+                // }
+            }
+        }
+    }
+    foreach ($alternatif as $alt) {
+        $idA = $alt['id'];
+
+        foreach ($kriteriaDB as $kriteria) {
+            $idK = $kriteria['id_kriteria'];
+
+            $kriteriaSudahPerkalian[$idA][$idK] = $kriteriaSudahHitung[$idA][$idK] * $kriteria['bobot'];
+        }
+    }
+    foreach ($alternatif as $alt) {
+        $idA = $alt['id'];
+
+        foreach ($kriteriaDB as $kriteria) {
+            $idK = $kriteria['id_kriteria'];
+            $hasil = 0;
+            for ($i = 0; $i < count($kriteria); $i++) {
+
+                $result[$idA] = $hasil + $kriteriaSudahPerkalian[$idA][$idK];
+            }
+        }
+    }
+    $terbesar = 0;
+    $terbaik = null;
+    foreach ($alternatif as $alt) {
+        $idA = $alt['id'];
+
+        // for ($i = 0; $i < count($kriteria); $i++) {
+        if ($terbesar < $result[$idA]) {
+            $terbesar = $result[$idA];
+            $terbaik = $alt['id'];
+        }
+        // }
+    }
+
+    $hasilAkhir = tampil("SELECT * FROM alternatif WHERE id = '$terbaik'");
+    if ($hasilAkhir) {
+        echo $hasilAkhir[0]['nama_alternatif'];
+    }
+
+    // var_dump($hasilAkhir);
+    // var_dump($nilaiMin);
+    die;
+    return 'a';
 }
 function tampil($query)
 {
